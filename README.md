@@ -1,8 +1,8 @@
-# Inventaire Bocage : OpenObs et OISON
+# Interventions de police : données OSCEAN
 
 Ce projet vise, à partir d'extractions issues de la base de donnée OSCEAN, à produire une donnée compilée et des rapports d'analyse annuels par territoire sur les interventions de police.
 
-Il peut être réutilisé par simple adaptation régionale.
+Il a été créée par et pour la région Bretagne mais peut être réutilisé librement par simple adaptation régionale.
 
 # Import des données
 
