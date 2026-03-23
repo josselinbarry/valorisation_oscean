@@ -165,7 +165,7 @@ histo_thematique_intervention_date_2025
 histo_service_intervention_date_2025
 ```
 
-# Les productions cartographiques :{#Productions-cartographiques}
+# Les productions cartographiques :
 
 **ATTENTION : ces cartographies ont été réalisés à partir des interventions dont le géoréférencement a pu être exploité (140 infractions ne disposent pas de géoréférencement). Le décompte des interventions est ainsi réalisé sur l'ensemble des données Oscean, mais les cartes représentent uniquement celles ayant fait l'objet d'un géoréférencement.**
 
@@ -189,4 +189,8 @@ Cette densité d’intervention permet de territorialiser notre présence en mat
 
 Proportion du **nombre d’interventions sur une thématique par rapport à l’ensemble des interventions** (0-100 : poids de la thématique dans nos choix d’interventions).
 
+# Github :
 
+La donnée a été retraitée sous R et ce rapport d'analyse créé sous Rmarkdown.
+
+Le [projet R réalisé pour analyse](https://github.com/josselinbarry/valorisation_oscean) est accessible depuis github et peut être librement réutilisé.
