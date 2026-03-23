@@ -79,15 +79,15 @@ Par soucis de simplification et de bonne compréhension de la donnée, l’**int
 
 *	Sécurité à la chasse.
 
-## Attention :{#Attention}
+## Attention :
 
 *	Une infraction n’est pas toujours issue d’un contrôle (nombreuses flagrances notamment).
 
 *	Un contrôle non-conforme ne se retrouve pas systématiquement dans la table de données des infractions (la suite d’un contrôle non-conforme est soit une procédure judiciaire, soit un Rapport de Manquement Administratif (RMA) ou de ne pas être relevé, sur avis du procureur).
 
-*	Il peu y avoir une légère sur-représentation des infractions dans les interventions si le contrôle non-conforme dont elle est issue n'est pas indiqué comme faisant suite à un contrôle administratif, elle sera alors compatibilisée deux fois (un contrôle non-conforme + une infraction) alors qu’il s’agit d’une seule et même infraction.  
+*	Il peu y avoir une légère sur-représentation des infractions dans les interventions si le contrôle non-con²forme dont elle est issue n'est pas indiqué comme faisant suite à un contrôle administratif, elle sera alors compatibilisée deux fois (un contrôle non-conforme + une infraction) alors qu’il s’agit d’une seule et même infraction.  
 
-# Distribution des données 
+# Distribution des données :
 
 # L'analyse des données :
 
