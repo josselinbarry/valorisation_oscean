@@ -1,5 +1,5 @@
 
-# MAJ 2024 ----
+# MAJ mars 2026 ----
 
 # Library ----
 #library(plyr)
@@ -46,7 +46,7 @@ controles_bzh_annee <- controles %>%
   mutate(entite = entit_ctrl,
          date = as.Date(date_ctrl),
          type = 'controle',
-         annee = substr(date,1,4),) %>%
+         annee = substr(date,1,4)) %>%
   dplyr::left_join(thematiques, 
                    by = c("theme" = "theme")) %>%
   select(entite, date, annee, type, resultat, thematique) %>%
@@ -87,11 +87,11 @@ infractions_ng_bzh_annee <- infractions_ng %>%
 
 infractions_totales <-
 rbind(infractions_bzh_annee %>%
-        select(entite)%>%
+        select(entite, type, thematique)%>%
         st_drop_geometry() %>%
         as.data.frame(),
       infractions_ng_bzh_annee %>%
-        select(entite)%>%
+        select(entite, type, thematique)%>%
         st_drop_geometry() %>%
         as.data.frame())
 
@@ -473,7 +473,48 @@ synth_conformite_entite <- table_interventions %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   rename(Service = entite)
 
+## Tables complémentaires ----
+
+synth_infractions_ng_service <- infractions_ng_bzh_annee %>% 
+  st_drop_geometry() %>%
+  as.data.frame() %>%
+  group_by(entite, thematique) %>%
+  tally() %>%
+  tidyr::pivot_wider(values_from = n, names_from = "entite",   values_fill = 0)
+
+synthese_date_service <- table_interventions %>% 
+  st_drop_geometry() %>%
+  as.data.frame() %>%
+  mutate(mois = substr(date,6,7)) %>%
+  group_by(entite, mois) %>% 
+  tally() %>% 
+  tidyr::pivot_wider(values_from = n, names_from = "entite",   values_fill = 0)
+
+synthese_date_thematique <- table_interventions %>% 
+  st_drop_geometry() %>%
+  as.data.frame() %>%
+  mutate(mois = substr(date,6,7)) %>%
+  group_by(thematique, mois) %>% 
+  tally() %>% 
+  tidyr::pivot_wider(values_from = n, names_from = "thematique",   values_fill = 0)
+
 # histogrammes ----
+
+histo_infractions_ng_service <-
+  plot_ly(synth_infractions_ng_service, 
+          type = 'bar', 
+          x = ~thematique, 
+          y = ~SD56, color = I("darkred"), name = "SD56") %>% 
+  add_bars(y = ~SD35, color = I("red"), name = "SD35") %>% 
+  add_bars(y = ~SD29, color = I("#fa99a3"), name = "SD29") %>% 
+  add_bars(y = ~SD22, color = I("#ffdadd"), name = "SD22") %>% 
+  add_bars(y = ~PNMI, color = I("#eb9eff"), name = "PNMI") %>% 
+  add_bars(y = ~`BMI-NO`, color = I("#8f0fb0"), name = "BMI-NO")  %>% 
+  layout(yaxis = list(title = "Nombre d'interventions"),barmode = 'stack')  %>%
+  layout(title = "Nombre d'interventions non-géoréférencées selon la tématique et le service",
+         xaxis = list(title = "Thématique"))
+
+histo_infractions_ng_service
 
 histo_conformite_service_interventions <-
   ggplot(data = table_interventions, 
@@ -540,37 +581,41 @@ histo_service_thematique_interventions <-
 
 histo_service_thematique_interventions
 
-histo_thematique_intervention_date_2025 <-
-  ggplot(data = table_interventions, 
-         aes(x = lubridate::ymd(date), fill = thematique)) +
-  geom_histogram(position = "dodge", bins = 12) +
-  labs(x = "Date de l'intervention",
-       y = "Nombre d'interventions",
-       title = "Dynamique d'interventions selon la thématique", 
-       subtitle = "1er Janvier 2025 - 31 Décembre 2025", 
-       fill = "Thématique") + 
-  scale_x_date(
-    date_labels = "%b\n%Y",
-    date_breaks = "month")+
-  theme(axis.text.x=element_text(angle=45, hjust=1, vjust=1))
+histo_dynamique_date_service <-
+  plot_ly(synthese_date_service, 
+          type = 'bar', 
+          x = ~mois, 
+          y = ~SD56, color = I("darkblue"), name = "SD56") %>% 
+  add_bars(y = ~SD35, color = I("blue"), name = "SD35") %>% 
+  add_bars(y = ~SD29, color = I("#18d0f0"), name = "SD29") %>% 
+  add_bars(y = ~SD22, color = I("lightblue"), name = "SD22") %>% 
+  add_bars(y = ~PNMI, color = I("#5dff2c"), name = "PNMI") %>% 
+  add_bars(y = ~`BMI-NO`, color = I("#0da404"), name = "BMI-NO")  %>% 
+  layout(yaxis = list(title = "Nombre d'interventions"),barmode = 'stack')  %>%
+  layout(title = "Nombre d'interventions réalisées par mois selon le service",
+         xaxis = list(title = "Mois de l'année"))
 
-histo_thematique_intervention_date_2025
+histo_dynamique_date_service
 
-histo_service_intervention_date_2025 <-
-  ggplot(data = table_interventions, 
-         aes(x = lubridate::ymd(date), fill = entite)) +
-  geom_histogram(position = "dodge", bins = 12) +
-  labs(x = "Date de l'intervention",
-       y = "Nombre d'interventions",
-       title = "Dynamique d'interventions selon le service", 
-       subtitle = "1er Janvier 2025 - 31 Décembre 2025", 
-       fill = "Service") + 
-  scale_x_date(
-    date_labels = "%b\n%Y",
-    date_breaks = "month")+
-  theme(axis.text.x=element_text(angle=45, hjust=1, vjust=1))
+histo_dynamique_date_thematique <-
+  plot_ly(synthese_date_thematique, 
+          type = 'bar', 
+          x = ~mois, 
+          y = ~`Hors thème`, color = I("grey"), name = "Hors thème") %>%
+  add_bars(y = ~`Police en environnement marin`, color = I("#ec6270"), name = "Police en environnement marin") %>% 
+  add_bars(y = ~`Pêche maritime`, color = I("#ef7bf1"), name = "Pêche maritime") %>% 
+  add_bars(y = ~`Sécurité et police de la chasse`, color = I("#ae7e3b"), name = "Sécurité et police de la chasse") %>% 
+  add_bars(y = ~`Espèces`, color = I("#5dff2c"), name = "Espèces") %>% 
+  add_bars(y = ~`Espaces protégés`, color = I("#0da404"), name = "Espaces protégés") %>% 
+  add_bars(y = ~`Pêche en eau douce`, color = I("#01ffff"), name = "Pêche en eau douce") %>% 
+  add_bars(y = ~`Préservation des milieux aquatiques`, color = I("#7bbfff"), name = "Préservation des milieux aquatiques") %>% 
+  add_bars(y = ~`Gestion qualitative de l'eau`, color = I("#0e01ff"), name = "Gestion qualitative de l'eau") %>% 
+  add_bars(y = ~`Gestion quantitative de l'eau`, color = I("#060082"), name = "Gestion quantitative de l'eau") %>% 
+  layout(yaxis = list(title = "Nombre d'interventions"),barmode = 'stack')  %>%
+  layout(title = "Nombre d'interventions réalisées par mois selon la thématique",
+         xaxis = list(title = "Mois de l'année"))
 
-histo_service_intervention_date_2025
+histo_dynamique_date_thematique
 
 # Sauvegarde des données ----
 
@@ -581,12 +626,16 @@ save(infractions_bzh_annee,
      synth_thematique_entite,
      synth_entite_thematique,
      synth_conformite_entite,
+     synth_infractions_ng_service,
+     synthese_date_service,
+     synthese_date_thematique,
+     histo_infractions_ng_service,
      histo_conformite_service_interventions,
      histo_conformite_thematique_interventions,
      histo_thematique_service_interventions,
      histo_service_thematique_interventions,
-     histo_thematique_intervention_date_2025,
-     histo_service_intervention_date_2025,
+     histo_dynamique_date_service,
+     histo_dynamique_date_thematique,
      file = "data/outputs/oscean_2025.RData")
 
 # chargement des résultats
